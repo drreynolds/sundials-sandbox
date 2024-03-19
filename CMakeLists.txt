@@ -14,3 +14,11 @@ add_executable(testMySUNLinearSolver
   mySUNLinearSolver.c
   myNVector.c)
 target_link_libraries(testMySUNLinearSolver SUNDIALS::core m)
+
+add_executable(ark_analytic_nonlin
+  ark_analytic_nonlin.c)
+target_link_libraries(ark_analytic_nonlin SUNDIALS::arkode m)
+
+add_executable(cvRoberts_dns
+  cvRoberts_dns.c)
+target_link_libraries(cvRoberts_dns SUNDIALS::cvode m)
