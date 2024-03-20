@@ -165,45 +165,45 @@ sunrealtype N_VMinQuotient_Mine(N_Vector num, N_Vector denom);
 
 /* fused vector operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* V,
-                                     N_Vector z);
+int N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* V,
+                              N_Vector z);
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
-                                 N_Vector* Y, N_Vector* Z);
+int N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
+                          N_Vector* Y, N_Vector* Z);
 SUNDIALS_EXPORT
-SUNErrCode N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
-                                sunrealtype* dotprods);
+int N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
+                         sunrealtype* dotprods);
 
 /* vector array operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
-                                        sunrealtype b, N_Vector* Y,
-                                        N_Vector* Z);
+int N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
+                                 sunrealtype b, N_Vector* Y,
+                                 N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
-                                    N_Vector* Z);
+int N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
+                             N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VConstVectorArray_Mine(int nvecs, sunrealtype c, N_Vector* Z);
+int N_VConstVectorArray_Mine(int nvecs, sunrealtype c, N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VWrmsNormVectorArray_Mine(int nvecs, N_Vector* X, N_Vector* W,
-                                       sunrealtype* nrm);
+int N_VWrmsNormVectorArray_Mine(int nvecs, N_Vector* X, N_Vector* W,
+                                sunrealtype* nrm);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VWrmsNormMaskVectorArray_Mine(int nvecs, N_Vector* X, N_Vector* W,
-                                           N_Vector id, sunrealtype* nrm);
+int N_VWrmsNormMaskVectorArray_Mine(int nvecs, N_Vector* X, N_Vector* W,
+                                    N_Vector id, sunrealtype* nrm);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
-                                            sunrealtype* a, N_Vector* X,
-                                            N_Vector** Y, N_Vector** Z);
+int N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
+                                     sunrealtype* a, N_Vector* X,
+                                     N_Vector** Y, N_Vector** Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
-                                                sunrealtype* c, N_Vector** X,
-                                                N_Vector* Z);
+int N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
+                                         sunrealtype* c, N_Vector** X,
+                                         N_Vector* Z);
 
 /* OPTIONAL local reduction kernels (no parallel communication) */
 SUNDIALS_EXPORT
@@ -214,13 +214,13 @@ sunrealtype N_VWSqrSumMaskLocal_Mine(N_Vector x, N_Vector w, N_Vector id);
 
 /* OPTIONAL XBraid interface operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VBufSize_Mine(N_Vector x, sunindextype* size);
+int N_VBufSize_Mine(N_Vector x, sunindextype* size);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VBufPack_Mine(N_Vector x, void* buf);
+int N_VBufPack_Mine(N_Vector x, void* buf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VBufUnpack_Mine(N_Vector x, void* buf);
+int N_VBufUnpack_Mine(N_Vector x, void* buf);
 
 /*
  * -----------------------------------------------------------------
@@ -229,39 +229,39 @@ SUNErrCode N_VBufUnpack_Mine(N_Vector x, void* buf);
  */
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableFusedOps_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearCombination_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableLinearCombination_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMulti_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableScaleAddMulti_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableDotProdMulti_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableDotProdMulti_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearSumVectorArray_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableLinearSumVectorArray_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleVectorArray_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableScaleVectorArray_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableConstVectorArray_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableConstVectorArray_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormVectorArray_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableWrmsNormVectorArray_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormMaskVectorArray_Mine(N_Vector v, sunbooleantype tf);
+int N_VEnableWrmsNormMaskVectorArray_Mine(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMultiVectorArray_Mine(N_Vector v,
-                                                  sunbooleantype tf);
+int N_VEnableScaleAddMultiVectorArray_Mine(N_Vector v,
+                                           sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearCombinationVectorArray_Mine(N_Vector v,
-                                                      sunbooleantype tf);
+int N_VEnableLinearCombinationVectorArray_Mine(N_Vector v,
+                                               sunbooleantype tf);
 
 #ifdef __cplusplus
 }

@@ -71,24 +71,24 @@ typedef struct _MySUNLinearSolverContent* MySUNLinearSolverContent;
 
 SUNDIALS_EXPORT SUNLinearSolver SUNLinSol_Mine(N_Vector y, int pretype,
                                                int maxl, SUNContext sunctx);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetPrecType_Mine(SUNLinearSolver S,
-                                                     int pretype);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetMaxl_Mine(SUNLinearSolver S, int maxl);
+SUNDIALS_EXPORT int SUNLinSolSetPrecType_Mine(SUNLinearSolver S,
+                                              int pretype);
+SUNDIALS_EXPORT int SUNLinSolSetMaxl_Mine(SUNLinearSolver S, int maxl);
 SUNDIALS_EXPORT SUNLinearSolver_Type SUNLinSolGetType_Mine(SUNLinearSolver S);
 SUNDIALS_EXPORT SUNLinearSolver_ID SUNLinSolGetID_Mine(SUNLinearSolver S);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolInitialize_Mine(SUNLinearSolver S);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetATimes_Mine(SUNLinearSolver S,
-                                                   void* A_data,
-                                                   SUNATimesFn ATimes);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetPreconditioner_Mine(SUNLinearSolver S,
-                                                           void* P_data,
-                                                           SUNPSetupFn Pset,
-                                                           SUNPSolveFn Psol);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetScalingVectors_Mine(SUNLinearSolver S,
-                                                           N_Vector s1,
-                                                           N_Vector s2);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSetZeroGuess_Mine(SUNLinearSolver S,
-                                                      sunbooleantype onoff);
+SUNDIALS_EXPORT int SUNLinSolInitialize_Mine(SUNLinearSolver S);
+SUNDIALS_EXPORT int SUNLinSolSetATimes_Mine(SUNLinearSolver S,
+                                            void* A_data,
+                                            SUNATimesFn ATimes);
+SUNDIALS_EXPORT int SUNLinSolSetPreconditioner_Mine(SUNLinearSolver S,
+                                                    void* P_data,
+                                                    SUNPSetupFn Pset,
+                                                    SUNPSolveFn Psol);
+SUNDIALS_EXPORT int SUNLinSolSetScalingVectors_Mine(SUNLinearSolver S,
+                                                    N_Vector s1,
+                                                    N_Vector s2);
+SUNDIALS_EXPORT int SUNLinSolSetZeroGuess_Mine(SUNLinearSolver S,
+                                               sunbooleantype onoff);
 SUNDIALS_EXPORT int SUNLinSolSetup_Mine(SUNLinearSolver S, SUNMatrix A);
 SUNDIALS_EXPORT int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A,
                                         N_Vector x, N_Vector b,
@@ -97,10 +97,10 @@ SUNDIALS_EXPORT int SUNLinSolNumIters_Mine(SUNLinearSolver S);
 SUNDIALS_EXPORT sunrealtype SUNLinSolResNorm_Mine(SUNLinearSolver S);
 SUNDIALS_EXPORT N_Vector SUNLinSolResid_Mine(SUNLinearSolver S);
 SUNDIALS_EXPORT sunindextype SUNLinSolLastFlag_Mine(SUNLinearSolver S);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolSpace_Mine(SUNLinearSolver S,
-                                               long int* lenrwLS,
-                                               long int* leniwLS);
-SUNDIALS_EXPORT SUNErrCode SUNLinSolFree_Mine(SUNLinearSolver S);
+SUNDIALS_EXPORT int SUNLinSolSpace_Mine(SUNLinearSolver S,
+                                        long int* lenrwLS,
+                                        long int* leniwLS);
+SUNDIALS_EXPORT int SUNLinSolFree_Mine(SUNLinearSolver S);
 
 #ifdef __cplusplus
 }

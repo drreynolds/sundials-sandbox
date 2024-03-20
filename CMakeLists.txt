@@ -7,13 +7,13 @@ find_package(SUNDIALS REQUIRED)
 add_executable(testMyNVector
   testMyNVector.c
   myNVector.c)
-target_link_libraries(testMyNVector SUNDIALS::core m)
+target_link_libraries(testMyNVector SUNDIALS::arkode m)
 
 add_executable(testMySUNLinearSolver
   testMySUNLinearSolver.c
   mySUNLinearSolver.c
   myNVector.c)
-target_link_libraries(testMySUNLinearSolver SUNDIALS::core m)
+target_link_libraries(testMySUNLinearSolver SUNDIALS::arkode m)
 
 add_executable(ark_analytic_nonlin
   ark_analytic_nonlin.c)

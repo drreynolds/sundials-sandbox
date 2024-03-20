@@ -18,8 +18,8 @@
 #include "myNVector.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_core.h>
-#include "sundials/sundials_errors.h"
+#include <sundials/sundials_types.h>
+#include <sundials/sundials_math.h>
 
 #define ZERO   SUN_RCONST(0.0)
 #define HALF   SUN_RCONST(0.5)
@@ -189,7 +189,7 @@ N_Vector N_VNew_Mine(sunindextype length, SUNContext sunctx)
  */
 
 N_Vector N_VMake_Mine(sunindextype length, sunrealtype* v_data,
-                        SUNContext sunctx)
+                      SUNContext sunctx)
 {
   N_Vector v;
 
@@ -846,8 +846,8 @@ sunrealtype N_VMinQuotient_Mine(N_Vector num, N_Vector denom)
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
-                                     N_Vector z)
+int N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
+                              N_Vector z)
 {
 
   int i;
@@ -856,20 +856,20 @@ SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
   sunrealtype* xd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VScale */
   if (nvec == 1)
   {
     N_VScale_Mine(c[0], X[0], z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* should have called N_VLinearSum */
   if (nvec == 2)
   {
     N_VLinearSum_Mine(c[0], X[0], c[1], X[1], z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length and data array */
@@ -886,7 +886,7 @@ SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
       xd = MYNV_DATA(X[i]);
       for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -900,7 +900,7 @@ SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
       xd = MYNV_DATA(X[i]);
       for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -913,11 +913,11 @@ SUNErrCode N_VLinearCombination_Mine(int nvec, sunrealtype* c, N_Vector* X,
     xd = MYNV_DATA(X[i]);
     for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
   }
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
-                                 N_Vector* Y, N_Vector* Z)
+int N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
+                          N_Vector* Y, N_Vector* Z)
 {
   int i;
   sunindextype j, N;
@@ -926,13 +926,13 @@ SUNErrCode N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
   sunrealtype* zd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VLinearSum */
   if (nvec == 1)
   {
     N_VLinearSum_Mine(a[0], x, ONE, Y[0], Z[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length and data array */
@@ -949,7 +949,7 @@ SUNErrCode N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
       yd = MYNV_DATA(Y[i]);
       for (j = 0; j < N; j++) { yd[j] += a[i] * xd[j]; }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -961,11 +961,11 @@ SUNErrCode N_VScaleAddMulti_Mine(int nvec, sunrealtype* a, N_Vector x,
     zd = MYNV_DATA(Z[i]);
     for (j = 0; j < N; j++) { zd[j] = a[i] * xd[j] + yd[j]; }
   }
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
-                                sunrealtype* dotprods)
+int N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
+                         sunrealtype* dotprods)
 {
   int i;
   sunindextype j, N;
@@ -973,13 +973,13 @@ SUNErrCode N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
   sunrealtype* yd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VDotProd */
   if (nvec == 1)
   {
     dotprods[0] = N_VDotProd_Mine(x, Y[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length and data array */
@@ -994,7 +994,7 @@ SUNErrCode N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
     for (j = 0; j < N; j++) { dotprods[i] += xd[j] * yd[j]; }
   }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
 /*
@@ -1003,8 +1003,8 @@ SUNErrCode N_VDotProdMulti_Mine(int nvec, N_Vector x, N_Vector* Y,
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
-                                        sunrealtype b, N_Vector* Y, N_Vector* Z)
+int N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
+                                 sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
   int i;
   sunindextype j, N;
@@ -1017,34 +1017,34 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
   sunbooleantype test;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VLinearSum */
   if (nvec == 1)
   {
     N_VLinearSum_Mine(a, X[0], b, Y[0], Z[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* BLAS usage: axpy y <- ax+y */
   if ((b == ONE) && (Z == Y))
   {
     VaxpyVectorArray_Mine(nvec, a, X, Y);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* BLAS usage: axpy x <- by+x */
   if ((a == ONE) && (Z == X))
   {
     VaxpyVectorArray_Mine(nvec, b, Y, X);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Case: a == b == 1.0 */
   if ((a == ONE) && (b == ONE))
   {
     VSumVectorArray_Mine(nvec, X, Y, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Cases:                    */
@@ -1055,7 +1055,7 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
     V1 = test ? Y : X;
     V2 = test ? X : Y;
     VDiffVectorArray_Mine(nvec, V2, V1, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Cases:                                                  */
@@ -1068,7 +1068,7 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
     V1 = test ? Y : X;
     V2 = test ? X : Y;
     VLin1VectorArray_Mine(nvec, c, V1, V2, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Cases:                     */
@@ -1080,7 +1080,7 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
     V1 = test ? Y : X;
     V2 = test ? X : Y;
     VLin2VectorArray_Mine(nvec, c, V1, V2, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Case: a == b                                                         */
@@ -1088,14 +1088,14 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
   if (a == b)
   {
     VScaleSumVectorArray_Mine(nvec, a, X, Y, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Case: a == -b */
   if (a == -b)
   {
     VScaleDiffVectorArray_Mine(nvec, a, X, Y, Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* Do all cases not handled above:                               */
@@ -1115,11 +1115,11 @@ SUNErrCode N_VLinearSumVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
     for (j = 0; j < N; j++) { zd[j] = a * xd[j] + b * yd[j]; }
   }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
-                                    N_Vector* Z)
+int N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
+                             N_Vector* Z)
 {
   int i;
   sunindextype j, N;
@@ -1127,13 +1127,13 @@ SUNErrCode N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
   sunrealtype* zd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VScale */
   if (nvec == 1)
   {
     N_VScale_Mine(c[0], X[0], Z[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length */
@@ -1149,7 +1149,7 @@ SUNErrCode N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
       xd = MYNV_DATA(X[i]);
       for (j = 0; j < N; j++) { xd[j] *= c[i]; }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -1161,23 +1161,23 @@ SUNErrCode N_VScaleVectorArray_Mine(int nvec, sunrealtype* c, N_Vector* X,
     zd = MYNV_DATA(Z[i]);
     for (j = 0; j < N; j++) { zd[j] = c[i] * xd[j]; }
   }
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VConstVectorArray_Mine(int nvec, sunrealtype c, N_Vector* Z)
+int N_VConstVectorArray_Mine(int nvec, sunrealtype c, N_Vector* Z)
 {
   int i;
   sunindextype j, N;
   sunrealtype* zd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VConst */
   if (nvec == 1)
   {
     N_VConst_Mine(c, Z[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length */
@@ -1190,11 +1190,11 @@ SUNErrCode N_VConstVectorArray_Mine(int nvec, sunrealtype c, N_Vector* Z)
     for (j = 0; j < N; j++) { zd[j] = c; }
   }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VWrmsNormVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
-                                       sunrealtype* nrm)
+int N_VWrmsNormVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
+                                sunrealtype* nrm)
 {
   int i;
   sunindextype j, N;
@@ -1202,13 +1202,13 @@ SUNErrCode N_VWrmsNormVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
   sunrealtype* xd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VWrmsNorm */
   if (nvec == 1)
   {
     nrm[0] = N_VWrmsNorm_Mine(X[0], W[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length */
@@ -1224,11 +1224,11 @@ SUNErrCode N_VWrmsNormVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
     nrm[i] = SUNRsqrt(nrm[i] / N);
   }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VWrmsNormMaskVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
-                                           N_Vector id, sunrealtype* nrm)
+int N_VWrmsNormMaskVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
+                                    N_Vector id, sunrealtype* nrm)
 {
   int i;
   sunindextype j, N;
@@ -1237,13 +1237,13 @@ SUNErrCode N_VWrmsNormMaskVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
   sunrealtype* idd = NULL;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* should have called N_VWrmsNorm */
   if (nvec == 1)
   {
     nrm[0] = N_VWrmsNormMask_Mine(X[0], W[0], id);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* get vector length and mask data array */
@@ -1263,12 +1263,12 @@ SUNErrCode N_VWrmsNormMaskVectorArray_Mine(int nvec, N_Vector* X, N_Vector* W,
     nrm[i] = SUNRsqrt(nrm[i] / N);
   }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
-                                            sunrealtype* a, N_Vector* X,
-                                            N_Vector** Y, N_Vector** Z)
+int N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
+                                     sunrealtype* a, N_Vector* X,
+                                     N_Vector** Y, N_Vector** Z)
 {
   int i, j;
   sunindextype k, N;
@@ -1279,7 +1279,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
   N_Vector* ZZ;
 
   /* invalid number of vectors */
-  if (nvec < 0) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if (nvec < 0) { return 1; }
 
   /* ---------------------------
    * Special cases for nvec == 1
@@ -1291,14 +1291,14 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
     if (nsum == 1)
     {
       N_VLinearSum_Mine(a[0], X[0], ONE, Y[0][0], Z[0][0]);
-      return SUN_SUCCESS;
+      return 0;
     }
 
     /* should have called N_VScaleAddMulti */
     YY = (N_Vector*)malloc(nsum * sizeof(N_Vector));
-    if (YY == NULL) { return SUN_ERR_MALLOC_FAIL; }
+    if (YY == NULL) { return 1; }
     ZZ = (N_Vector*)malloc(nsum * sizeof(N_Vector));
-    if (ZZ == NULL) { return SUN_ERR_MALLOC_FAIL; }
+    if (ZZ == NULL) { return 1; }
 
     for (j = 0; j < nsum; j++)
     {
@@ -1311,7 +1311,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
     free(YY);
     free(ZZ);
 
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* --------------------------
@@ -1322,7 +1322,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
   if (nsum == 1)
   {
     N_VLinearSumVectorArray_Mine(nvec, a[0], X, ONE, Y[0], Z[0]);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* ----------------------------
@@ -1346,7 +1346,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
         for (k = 0; k < N; k++) { yd[k] += a[j] * xd[k]; }
       }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -1362,12 +1362,12 @@ SUNErrCode N_VScaleAddMultiVectorArray_Mine(int nvec, int nsum,
       for (k = 0; k < N; k++) { zd[k] = a[j] * xd[k] + yd[k]; }
     }
   }
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
-                                                sunrealtype* c, N_Vector** X,
-                                                N_Vector* Z)
+int N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
+                                         sunrealtype* c, N_Vector** X,
+                                         N_Vector* Z)
 {
   int i;          /* vector arrays index in summation [0,nsum) */
   int j;          /* vector index in vector array     [0,nvec) */
@@ -1379,7 +1379,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
   N_Vector* Y;
 
   /* invalid number of vectors */
-  if ((nvec < 1) || (nsum < 1)) { return SUN_ERR_ARG_OUTOFRANGE; }
+  if ((nvec < 1) || (nsum < 1)) { return 1; }
 
   /* ---------------------------
    * Special cases for nvec == 1
@@ -1391,19 +1391,19 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
     if (nsum == 1)
     {
       N_VScale_Mine(c[0], X[0][0], Z[0]);
-      return SUN_SUCCESS;
+      return 0;
     }
 
     /* should have called N_VLinearSum */
     if (nsum == 2)
     {
       N_VLinearSum_Mine(c[0], X[0][0], c[1], X[1][0], Z[0]);
-      return SUN_SUCCESS;
+      return 0;
     }
 
     /* should have called N_VLinearCombination */
     Y = (N_Vector*)malloc(nsum * sizeof(N_Vector));
-    if (Y == NULL) { return SUN_ERR_MALLOC_FAIL; }
+    if (Y == NULL) { return 1; }
 
     for (i = 0; i < nsum; i++) { Y[i] = X[i][0]; }
 
@@ -1411,7 +1411,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
 
     free(Y);
 
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* --------------------------
@@ -1422,21 +1422,21 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
   if (nsum == 1)
   {
     ctmp = (sunrealtype*)malloc(nvec * sizeof(sunrealtype));
-    if (ctmp == NULL) { return SUN_ERR_MALLOC_FAIL; }
+    if (ctmp == NULL) { return 1; }
 
     for (j = 0; j < nvec; j++) { ctmp[j] = c[0]; }
 
     N_VScaleVectorArray_Mine(nvec, ctmp, X[0], Z);
 
     free(ctmp);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* should have called N_VLinearSumVectorArray */
   if (nsum == 2)
   {
     N_VLinearSumVectorArray_Mine(nvec, c[0], X[0], c[1], X[1], Z);
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /* --------------------------
@@ -1460,7 +1460,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
         for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
       }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -1478,7 +1478,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
         for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
       }
     }
-    return SUN_SUCCESS;
+    return 0;
   }
 
   /*
@@ -1495,7 +1495,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
       for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
     }
   }
-  return SUN_SUCCESS;
+  return 0;
 }
 
 /*
@@ -1504,19 +1504,19 @@ SUNErrCode N_VLinearCombinationVectorArray_Mine(int nvec, int nsum,
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VBufSize_Mine(N_Vector x, sunindextype* size)
+int N_VBufSize_Mine(N_Vector x, sunindextype* size)
 {
   *size = MYNV_LENGTH(x) * ((sunindextype)sizeof(sunrealtype));
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VBufPack_Mine(N_Vector x, void* buf)
+int N_VBufPack_Mine(N_Vector x, void* buf)
 {
   sunindextype i, N;
   sunrealtype* xd = NULL;
   sunrealtype* bd = NULL;
 
-  if (buf == NULL) { return SUN_ERR_ARG_CORRUPT; }
+  if (buf == NULL) { return 1; }
 
   N  = MYNV_LENGTH(x);
   xd = MYNV_DATA(x);
@@ -1524,16 +1524,16 @@ SUNErrCode N_VBufPack_Mine(N_Vector x, void* buf)
 
   for (i = 0; i < N; i++) { bd[i] = xd[i]; }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VBufUnpack_Mine(N_Vector x, void* buf)
+int N_VBufUnpack_Mine(N_Vector x, void* buf)
 {
   sunindextype i, N;
   sunrealtype* xd = NULL;
   sunrealtype* bd = NULL;
 
-  if (buf == NULL) { return SUN_ERR_ARG_CORRUPT; }
+  if (buf == NULL) { return 1; }
 
   N  = MYNV_LENGTH(x);
   xd = MYNV_DATA(x);
@@ -1541,7 +1541,7 @@ SUNErrCode N_VBufUnpack_Mine(N_Vector x, void* buf)
 
   for (i = 0; i < N; i++) { xd[i] = bd[i]; }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
 /*
@@ -1898,7 +1898,7 @@ static void VaxpyVectorArray_Mine(int nvec, sunrealtype a, N_Vector* X,
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VEnableFusedOps_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableFusedOps_Mine(N_Vector v, sunbooleantype tf)
 {
   if (tf)
   {
@@ -1937,70 +1937,70 @@ SUNErrCode N_VEnableFusedOps_Mine(N_Vector v, sunbooleantype tf)
   }
 
   /* return success */
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableLinearCombination_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableLinearCombination_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvlinearcombination = tf ? N_VLinearCombination_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableScaleAddMulti_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableScaleAddMulti_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvscaleaddmulti = tf ? N_VScaleAddMulti_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableDotProdMulti_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableDotProdMulti_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvdotprodmulti      = tf ? N_VDotProdMulti_Mine : NULL;
   v->ops->nvdotprodmultilocal = tf ? N_VDotProdMulti_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableLinearSumVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableLinearSumVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvlinearsumvectorarray = tf ? N_VLinearSumVectorArray_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableScaleVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableScaleVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvscalevectorarray = tf ? N_VScaleVectorArray_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableConstVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableConstVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvconstvectorarray = tf ? N_VConstVectorArray_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableWrmsNormVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableWrmsNormVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvwrmsnormvectorarray = tf ? N_VWrmsNormVectorArray_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableWrmsNormMaskVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableWrmsNormMaskVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvwrmsnormmaskvectorarray = tf ? N_VWrmsNormMaskVectorArray_Mine
                                          : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableScaleAddMultiVectorArray_Mine(N_Vector v, sunbooleantype tf)
+int N_VEnableScaleAddMultiVectorArray_Mine(N_Vector v, sunbooleantype tf)
 {
   v->ops->nvscaleaddmultivectorarray = tf ? N_VScaleAddMultiVectorArray_Mine
                                           : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode N_VEnableLinearCombinationVectorArray_Mine(N_Vector v,
-                                                      sunbooleantype tf)
+int N_VEnableLinearCombinationVectorArray_Mine(N_Vector v,
+                                               sunbooleantype tf)
 {
   v->ops->nvlinearcombinationvectorarray =
     tf ? N_VLinearCombinationVectorArray_Mine : NULL;
-  return SUN_SUCCESS;
+  return 0;
 }

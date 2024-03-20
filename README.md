@@ -22,4 +22,4 @@ cmake -DSUNDIALS_DIR=/usr/local/sundials/lib/cmake/sundials ..
 make
 ```
 
-This has been tested using SUNDIALS v7.0.
+This has been tested using SUNDIALS v6.6.1.

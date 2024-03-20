@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   N_Vector V, W, X, Y, Z;    /* test vectors              */
   SUNContext sunctx = NULL;
 
-  if (SUNContext_Create(SUN_COMM_NULL, &sunctx))
+  if (SUNContext_Create(NULL, &sunctx))
   {
     printf("ERROR: SUNContext_Create failed\n");
     return -1;

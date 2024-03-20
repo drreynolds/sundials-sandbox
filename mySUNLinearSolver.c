@@ -139,25 +139,25 @@ SUNLinearSolver SUNLinSol_Mine(N_Vector y, int pretype, int maxl,
  * Function to set the type of preconditioning for SPTFQMR to use
  */
 
-SUNErrCode SUNLinSolSetPrecType_Mine(SUNLinearSolver S, int pretype)
+int SUNLinSolSetPrecType_Mine(SUNLinearSolver S, int pretype)
 {
   /* Set pretype */
   MY_CONTENT(S)->pretype = pretype;
-  return SUN_SUCCESS;
+  return 0;
 }
 
 /* ----------------------------------------------------------------------------
  * Function to set the maximum number of iterations for SPTFQMR to use
  */
 
-SUNErrCode SUNLinSolSetMaxl_Mine(SUNLinearSolver S, int maxl)
+int SUNLinSolSetMaxl_Mine(SUNLinearSolver S, int maxl)
 {
   /* Check for legal pretype */
   if (maxl <= 0) { maxl = MY_MAXL_DEFAULT; }
 
   /* Set pretype */
   MY_CONTENT(S)->maxl = maxl;
-  return SUN_SUCCESS;
+  return 0;
 }
 
 /*
@@ -176,7 +176,7 @@ SUNLinearSolver_ID SUNLinSolGetID_Mine(SUNLinearSolver S)
   return (SUNLINEARSOLVER_CUSTOM);
 }
 
-SUNErrCode SUNLinSolInitialize_Mine(SUNLinearSolver S)
+int SUNLinSolInitialize_Mine(SUNLinearSolver S)
 {
   MySUNLinearSolverContent content;
 
@@ -185,7 +185,7 @@ SUNErrCode SUNLinSolInitialize_Mine(SUNLinearSolver S)
 
   /* ensure valid options */
   if (content->maxl <= 0) { content->maxl = MY_MAXL_DEFAULT; }
-  if (content->ATimes == NULL) { return SUN_ERR_ARG_CORRUPT; }
+  if (content->ATimes == NULL) { return 1; }
 
   if ((content->pretype != SUN_PREC_LEFT) &&
       (content->pretype != SUN_PREC_RIGHT) && (content->pretype != SUN_PREC_BOTH))
@@ -195,51 +195,51 @@ SUNErrCode SUNLinSolInitialize_Mine(SUNLinearSolver S)
 
   /* no additional memory to allocate */
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode SUNLinSolSetATimes_Mine(SUNLinearSolver S, void* ATData,
-                                   SUNATimesFn ATimes)
+int SUNLinSolSetATimes_Mine(SUNLinearSolver S, void* ATData,
+                            SUNATimesFn ATimes)
 {
   /* set function pointers to integrator-supplied ATimes routine
      and data, and return with success */
   MY_CONTENT(S)->ATimes = ATimes;
   MY_CONTENT(S)->ATData = ATData;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode SUNLinSolSetPreconditioner_Mine(SUNLinearSolver S, void* PData,
-                                           SUNPSetupFn Psetup,
-                                           SUNPSolveFn Psolve)
+int SUNLinSolSetPreconditioner_Mine(SUNLinearSolver S, void* PData,
+                                    SUNPSetupFn Psetup,
+                                    SUNPSolveFn Psolve)
 {
   /* set function pointers to integrator-supplied Psetup and PSolve
      routines and data, and return with success */
   MY_CONTENT(S)->Psetup = Psetup;
   MY_CONTENT(S)->Psolve = Psolve;
   MY_CONTENT(S)->PData  = PData;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode SUNLinSolSetScalingVectors_Mine(SUNLinearSolver S, N_Vector s1,
-                                           N_Vector s2)
+int SUNLinSolSetScalingVectors_Mine(SUNLinearSolver S, N_Vector s1,
+                                    N_Vector s2)
 {
   /* set N_Vector pointers to integrator-supplied scaling vectors,
      and return with success */
   MY_CONTENT(S)->s1 = s1;
   MY_CONTENT(S)->s2 = s2;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode SUNLinSolSetZeroGuess_Mine(SUNLinearSolver S, sunbooleantype onoff)
+int SUNLinSolSetZeroGuess_Mine(SUNLinearSolver S, sunbooleantype onoff)
 {
   /* set flag indicating a zero initial guess */
   MY_CONTENT(S)->zeroguess = onoff;
-  return SUN_SUCCESS;
+  return 0;
 }
 
 int SUNLinSolSetup_Mine(SUNLinearSolver S, SUNMatrix A)
 {
-  int status = SUN_SUCCESS;
+  int status = 0;
   SUNPSetupFn Psetup;
   void* PData;
 
@@ -260,8 +260,8 @@ int SUNLinSolSetup_Mine(SUNLinearSolver S, SUNMatrix A)
   }
 
   /* return with success */
-  LASTFLAG(S) = SUN_SUCCESS;
-  return SUN_SUCCESS;
+  LASTFLAG(S) = 0;
+  return 0;
 }
 
 int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A, N_Vector x,
@@ -283,7 +283,7 @@ int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   N_Vector sx, sb, r_star, q, d, v, p, *r, u, vtemp1, vtemp2, vtemp3;
   sunrealtype cv[3];
   N_Vector Xv[3];
-  int status = SUN_SUCCESS;
+  int status = 0;
 
   /* Make local shorcuts to solver variables. */
   l_max     = MY_CONTENT(S)->maxl;
@@ -325,16 +325,16 @@ int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (preOnRight && !(*zeroguess))
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUN_ERR_ARG_INCOMPATIBLE;
-    return SUN_ERR_ARG_INCOMPATIBLE;
+    LASTFLAG(S) = 1;
+    return 1;
   }
 
   /* Check if Atimes function has been set */
-  if (atimes == NULL) { return SUN_ERR_ARG_CORRUPT; }
+  if (atimes == NULL) { return 1; }
 
   /* If preconditioning, check if psolve has been set */
   if ((preOnLeft || preOnRight) && (psolve == NULL))
-  { return SUN_ERR_ARG_CORRUPT; }
+  { return 1; }
 
   /* Set r_star to initial (unscaled) residual r_star = r_0 = b - A*x_0 */
   /* NOTE: if x == 0 then just set residual to b and continue */
@@ -382,7 +382,7 @@ int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (r_init_norm <= delta)
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUN_SUCCESS;
+    LASTFLAG(S) = 0;
     return (LASTFLAG(S));
   }
 
@@ -733,7 +733,7 @@ int SUNLinSolSolve_Mine(SUNLinearSolver S, SUNMatrix A, N_Vector x,
     }
 
     *zeroguess = SUNFALSE;
-    if (converged == SUNTRUE) { LASTFLAG(S) = SUN_SUCCESS; }
+    if (converged == SUNTRUE) { LASTFLAG(S) = 0; }
     else { LASTFLAG(S) = SUNLS_RES_REDUCED; }
     return (LASTFLAG(S));
   }
@@ -765,8 +765,8 @@ sunindextype SUNLinSolLastFlag_Mine(SUNLinearSolver S)
   return (LASTFLAG(S));
 }
 
-SUNErrCode SUNLinSolSpace_Mine(SUNLinearSolver S, long int* lenrwLS,
-                               long int* leniwLS)
+int SUNLinSolSpace_Mine(SUNLinearSolver S, long int* lenrwLS,
+                        long int* leniwLS)
 {
   sunindextype liw1, lrw1;
   if (MY_CONTENT(S)->vtemp1->ops->nvspace)
@@ -776,12 +776,12 @@ SUNErrCode SUNLinSolSpace_Mine(SUNLinearSolver S, long int* lenrwLS,
   else { lrw1 = liw1 = 0; }
   *lenrwLS = lrw1 * 11;
   *leniwLS = liw1 * 11;
-  return SUN_SUCCESS;
+  return 0;
 }
 
-SUNErrCode SUNLinSolFree_Mine(SUNLinearSolver S)
+int SUNLinSolFree_Mine(SUNLinearSolver S)
 {
-  if (S == NULL) { return SUN_SUCCESS; }
+  if (S == NULL) { return 0; }
 
   if (S->content)
   {
@@ -846,5 +846,5 @@ SUNErrCode SUNLinSolFree_Mine(SUNLinearSolver S)
   }
   free(S);
   S = NULL;
-  return SUN_SUCCESS;
+  return 0;
 }
